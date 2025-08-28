@@ -1,9 +1,9 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect} from "react";
 import { AuthContext } from "../context/AuthContext";
 import { motion } from "framer-motion";
 import { LogOut, User, List } from "lucide-react";
 import api from "../api";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 
 export default function Profile() {
   const { user, handleLogout } = useContext(AuthContext);
@@ -13,23 +13,7 @@ export default function Profile() {
   const [showRequests, setShowRequests] = useState(false);
   const isVolunteer = user?.role === "volunteer";
 
-  if (!user)
-    return (
-    <div class="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 px-4">
-  <div class="bg-white p-10 rounded-3xl shadow-2xl text-center max-w-sm border border-gray-100">
-    <div class="text-6xl mb-4 animate-bounce">👋</div>
-    <h2 class="text-2xl font-bold text-gray-800 mb-4">Welcome Back!</h2>
-    <p class="text-gray-600 mb-6">Please login to access your profile and request help.</p>
-    <button onClick={() => navigate('/login')} className="flex items-center justify-center gap-2 w-full px-6 py-3 bg-blue-500 text-white font-semibold rounded-xl shadow-lg hover:bg-blue-600 transition-all">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12H3m12 0l-4-4m4 4l-4 4m6 4v-1a4 4 0 00-4-4H5a4 4 0 00-4 4v1"></path>
-      </svg>
-      Login
-    </button>
-  </div>
-</div>
-
-    );
+  
 
   const handleViewRequests = async () => {
     try {
@@ -43,6 +27,11 @@ export default function Profile() {
       setLoading(false);
     }
   };
+   useEffect(() => {
+    if (!user) {
+      navigate("/");
+    }
+  }, [user, navigate]);
 
   return (
     <div className="max-w-2xl mx-auto mt-10">
