@@ -1,9 +1,9 @@
-import React, { useContext, useState, useEffect} from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { motion } from "framer-motion";
 import { LogOut, User, List } from "lucide-react";
 import api from "../api";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function Profile() {
   const { user, handleLogout } = useContext(AuthContext);
@@ -13,7 +13,12 @@ export default function Profile() {
   const [showRequests, setShowRequests] = useState(false);
   const isVolunteer = user?.role === "volunteer";
 
-  
+  // Redirect if not logged in
+  useEffect(() => {
+    if (!user) {
+      navigate("/");
+    }
+  }, [user, navigate]);
 
   const handleViewRequests = async () => {
     try {
@@ -27,46 +32,49 @@ export default function Profile() {
       setLoading(false);
     }
   };
-   useEffect(() => {
-    if (!user) {
-      navigate("/");
-    }
-  }, [user, navigate]);
 
   return (
-    <div className="max-w-2xl mx-auto mt-10">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-100 flex items-center justify-center px-4">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="bg-white shadow-xl rounded-2xl p-8 flex flex-col items-center space-y-6 border border-gray-100"
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="bg-white shadow-2xl rounded-3xl p-10 w-full max-w-3xl border border-gray-200 relative overflow-hidden"
       >
-        {/* Avatar */}
-        <div className="w-24 h-24 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center shadow-md">
-          <User className="text-white w-12 h-12" />
-        </div>
+        {/* Floating gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-tr from-blue-100 via-purple-100 to-transparent opacity-40 pointer-events-none"></div>
 
-        {/* User Info */}
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-800">{user.name}</h2>
+        {/* Avatar */}
+        <div className="relative z-10 flex flex-col items-center space-y-3">
+          <motion.div
+            initial={{ scale: 0.8 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 0.4 }}
+            className="w-28 h-28 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center shadow-lg ring-4 ring-white"
+          >
+            <User className="text-white w-14 h-14" />
+          </motion.div>
+          <h2 className="text-3xl font-bold text-gray-800">{user.name}</h2>
           <p className="text-gray-500">{user.email}</p>
+          <span className="px-3 py-1 text-xs font-medium bg-blue-100 text-blue-600 rounded-full">
+            {user.role}
+          </span>
         </div>
 
         {/* Action Buttons */}
-        <div className="flex flex-col gap-3 w-full justify-center items-center">
-
-          { !isVolunteer && (<button
-            onClick={handleViewRequests}
-            className="flex w-1/3 items-center justify-center gap-2 px-6 py-2 bg-blue-500 text-white rounded-xl shadow hover:bg-blue-600 transition-all"
-          >
-            <List className="w-5 h-5" />
-            View My Requests
-          </button>)}
-          
-
+        <div className="relative z-10 mt-8 flex flex-wrap gap-4 justify-center">
+          {!isVolunteer && (
+            <button
+              onClick={handleViewRequests}
+              className="flex items-center gap-2 px-6 py-3 bg-blue-500 text-white font-semibold rounded-xl shadow-lg hover:bg-blue-600 hover:scale-105 transition-all"
+            >
+              <List className="w-5 h-5" />
+              View My Requests
+            </button>
+          )}
           <button
             onClick={handleLogout}
-            className="flex w-1/3 items-center justify-center gap-2 px-6 py-2 bg-red-500 text-white rounded-xl shadow hover:bg-red-600 transition-all"
+            className="flex items-center gap-2 px-6 py-3 bg-red-500 text-white font-semibold rounded-xl shadow-lg hover:bg-red-600 hover:scale-105 transition-all"
           >
             <LogOut className="w-5 h-5" />
             Logout
@@ -75,78 +83,88 @@ export default function Profile() {
 
         {/* Requests Section */}
         {showRequests && (
-          <div className="w-full mt-6">
-            <h3 className="text-xl font-semibold text-gray-700 mb-4">
+          <motion.div
+            initial={{ opacity: 0, y: 25 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="mt-10 relative z-10"
+          >
+            <h3 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
               My Requests
             </h3>
             {loading ? (
-              <p className="text-gray-500">Loading...</p>
+              <p className="text-gray-500 text-center">Loading...</p>
             ) : requests.length === 0 ? (
-              <p className="text-gray-500">No requests found.</p>
+              <p className="text-gray-500 text-center">No requests found.</p>
             ) : (
               <ul className="space-y-4">
-                {requests.slice().reverse().map((req) => (
-                  <motion.li
-                    key={req._id}
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="p-5 border rounded-xl shadow-sm bg-gray-50 hover:shadow-md transition-all"
-                  >
-                    {/* Title */}
-                    <h4 className="font-bold text-lg text-gray-800 mb-1">
-                      {req.title}
-                    </h4>
-                    <p className="text-gray-600 text-sm mb-3">
-                      {req.description}
-                    </p>
+                {requests
+                  .slice()
+                  .reverse()
+                  .map((req) => (
+                    <motion.li
+                      key={req._id}
+                      initial={{ opacity: 0, y: 15 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.4 }}
+                      className="p-6 border rounded-2xl shadow-md bg-gradient-to-br from-gray-50 to-white hover:shadow-xl hover:scale-[1.01] transition-all"
+                    >
+                      {/* Title */}
+                      <h4 className="font-bold text-lg text-gray-800 mb-2">
+                        {req.title}
+                      </h4>
+                      <p className="text-gray-600 text-sm mb-4">
+                        {req.description}
+                      </p>
 
-                    {/* Extra Info */}
-                    <div className="grid grid-cols-2 gap-3 text-sm">
-                      <p>
-                        <span className="font-medium text-gray-700">Type:</span>{" "}
-                        {req.type}
-                      </p>
-                      <p>
-                        <span className="font-medium text-gray-700">
-                          Urgency:
-                        </span>{" "}
-                        {req.urgency}
-                      </p>
-                      <p>
-                        <span className="font-medium text-gray-700">
-                          Destination:
-                        </span>{" "}
-                        {req.destination || "N/A"}
-                      </p>
-                      <p>
-                        <span className="font-medium text-gray-700">
-                          Status:
-                        </span>{" "}
-                        <span
-                          className={`px-2 py-0.5 rounded-full text-xs ${
-                            req.status === "Pending"
-                              ? "bg-yellow-100 text-yellow-700"
-                              : req.status === "Approved"
-                              ? "bg-green-100 text-green-700"
-                              : "bg-red-100 text-red-700"
-                          }`}
-                        >
-                          {req.status}
-                        </span>
-                      </p>
-                      <p className="col-span-2">
-                        <span className="font-medium text-gray-700">
-                          Date Applied:
-                        </span>{" "}
-                        {new Date(req.createdAt).toLocaleDateString()}
-                      </p>
-                    </div>
-                  </motion.li>
-                ))}
+                      {/* Extra Info */}
+                      <div className="grid grid-cols-2 gap-3 text-sm">
+                        <p>
+                          <span className="font-medium text-gray-700">
+                            Type:
+                          </span>{" "}
+                          {req.type}
+                        </p>
+                        <p>
+                          <span className="font-medium text-gray-700">
+                            Urgency:
+                          </span>{" "}
+                          {req.urgency}
+                        </p>
+                        <p>
+                          <span className="font-medium text-gray-700">
+                            Destination:
+                          </span>{" "}
+                          {req.destination || "N/A"}
+                        </p>
+                        <p>
+                          <span className="font-medium text-gray-700">
+                            Status:
+                          </span>{" "}
+                          <span
+                            className={`px-3 py-1 rounded-full text-xs font-medium ${
+                              req.status === "Pending"
+                                ? "bg-yellow-100 text-yellow-700"
+                                : req.status === "Approved"
+                                ? "bg-green-100 text-green-700"
+                                : "bg-red-100 text-red-700"
+                            }`}
+                          >
+                            {req.status}
+                          </span>
+                        </p>
+                        <p className="col-span-2">
+                          <span className="font-medium text-gray-700">
+                            Date Applied:
+                          </span>{" "}
+                          {new Date(req.createdAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </motion.li>
+                  ))}
               </ul>
             )}
-          </div>
+          </motion.div>
         )}
       </motion.div>
     </div>
