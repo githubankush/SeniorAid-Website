@@ -5,6 +5,7 @@ import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import requestRoutes from "./routes/requestRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
 import cookieParser from "cookie-parser";
 
 dotenv.config();
@@ -27,6 +28,7 @@ app.get("/", (req, res) => res.send("API is running..."));
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);  
 app.use("/api/requests", requestRoutes);
+app.use("/api/admin", adminRoutes); // Admin routes
 
 // Error handler for unknown routes
 app.use((req, res, next) => {
