@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect } from "react";
 import { getProfile, login, logout, register } from "../services/authService";
-
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -34,9 +35,18 @@ export const AuthProvider = ({ children }) => {
   };
 
   const handleLogout = async () => {
-    await logout();
+  try {
+    await logout(); // your API call
     setUser(null);
-  };
+    toast.success("You have been logged out!",{
+        position: "top-right",
+        autoClose: 3000,
+      }); 
+  } catch (err) {
+    toast.error("Logout failed, please try again.");
+    console.error(err);
+  }
+};
 
   return (
     <AuthContext.Provider value={{ user,loading, handleLogin, handleRegister, handleLogout }}>

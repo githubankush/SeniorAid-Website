@@ -3,9 +3,11 @@ import { AuthContext } from "../context/AuthContext";
 import { motion } from "framer-motion";
 import { LogOut, User, List } from "lucide-react";
 import api from "../api";
+import { useNavigate } from "react-router-dom";
 
 export default function Profile() {
   const { user, handleLogout } = useContext(AuthContext);
+  const navigate = useNavigate();
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showRequests, setShowRequests] = useState(false);
@@ -18,7 +20,7 @@ export default function Profile() {
     <div class="text-6xl mb-4 animate-bounce">👋</div>
     <h2 class="text-2xl font-bold text-gray-800 mb-4">Welcome Back!</h2>
     <p class="text-gray-600 mb-6">Please login to access your profile and request help.</p>
-    <button onClick={() => (window.location.href = "/login")} className="flex items-center justify-center gap-2 w-full px-6 py-3 bg-blue-500 text-white font-semibold rounded-xl shadow-lg hover:bg-blue-600 transition-all">
+    <button onClick={() => navigate('/login')} className="flex items-center justify-center gap-2 w-full px-6 py-3 bg-blue-500 text-white font-semibold rounded-xl shadow-lg hover:bg-blue-600 transition-all">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12H3m12 0l-4-4m4 4l-4 4m6 4v-1a4 4 0 00-4-4H5a4 4 0 00-4 4v1"></path>
       </svg>
