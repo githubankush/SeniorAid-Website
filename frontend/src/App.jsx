@@ -10,6 +10,7 @@ import { ToastContainer } from "react-toastify";
 import ErrorPage from "./pages/ErrorPage";
 import RequireRole from "./components/RequireRole";
 import VolunteerDashboard from "./pages/VolunteerDashboard";
+import AdminDashboard from "./pages/AdminDashboard";
 
 export default function App() {
   return (
@@ -32,7 +33,11 @@ export default function App() {
               <VolunteerDashboard />
             </RequireRole>
           }/>
-          
+          <Route path="/admin-dashboard" element={
+            <RequireRole roles={["admin"]}>
+              <AdminDashboard />
+            </RequireRole>
+          }/>
 
         </Routes>
 

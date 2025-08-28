@@ -20,6 +20,7 @@ export default function Profile() {
     }
   }, [user, navigate]);
 
+  // Fetch user requests
   const handleViewRequests = async () => {
     try {
       setLoading(true);
@@ -30,6 +31,16 @@ export default function Profile() {
       console.error("Error fetching requests:", err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Proper logout flow
+  const handleLogoutClick = async () => {
+    try {
+      await handleLogout(); // clears AuthContext + tokens
+      navigate("/"); // redirect immediately
+    } catch (error) {
+      console.error("Logout failed:", error);
     }
   };
 
@@ -44,7 +55,7 @@ export default function Profile() {
         {/* Floating gradient background */}
         <div className="absolute inset-0 bg-gradient-to-tr from-blue-100 via-purple-100 to-transparent opacity-40 pointer-events-none"></div>
 
-        {/* Avatar */}
+        {/* Avatar + Info */}
         <div className="relative z-10 flex flex-col items-center space-y-3">
           <motion.div
             initial={{ scale: 0.8 }}
@@ -54,10 +65,10 @@ export default function Profile() {
           >
             <User className="text-white w-14 h-14" />
           </motion.div>
-          <h2 className="text-3xl font-bold text-gray-800">{user.name}</h2>
-          <p className="text-gray-500">{user.email}</p>
+          <h2 className="text-3xl font-bold text-gray-800">{user?.name}</h2>
+          <p className="text-gray-500">{user?.email}</p>
           <span className="px-3 py-1 text-xs font-medium bg-blue-100 text-blue-600 rounded-full">
-            {user.role}
+            {user?.role}
           </span>
         </div>
 
@@ -73,7 +84,7 @@ export default function Profile() {
             </button>
           )}
           <button
-            onClick={handleLogout}
+            onClick={handleLogoutClick}
             className="flex items-center gap-2 px-6 py-3 bg-red-500 text-white font-semibold rounded-xl shadow-lg hover:bg-red-600 hover:scale-105 transition-all"
           >
             <LogOut className="w-5 h-5" />
