@@ -7,7 +7,7 @@ import Profile from "./pages/Profile";
 import Navbar from "./components/Navbar";
 import RequestPage from "./pages/RequestPage";
 import { ToastContainer } from "react-toastify";
-import ErrorPage from "./pages/ErrorPage";
+import NotFound from "./pages/NotFound";
 import RequireRole from "./components/RequireRole";
 import VolunteerDashboard from "./pages/VolunteerDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
@@ -26,7 +26,7 @@ export default function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/request" element={<RequestPage />} />
-          <Route path="*" element={<ErrorPage />} />
+          <Route path="*" element={<NotFound />} />
 
           <Route path="/volunteer-dashboard" element={
             <RequireRole roles={["volunteer", "admin"]}>
