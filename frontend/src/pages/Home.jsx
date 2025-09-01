@@ -6,7 +6,10 @@ export default function Home() {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
   const isVolunteer = user?.role === "volunteer";
-
+  const isAdmin = user?.role === "admin";
+  if (isAdmin) {
+    return navigate("/admin-dashboard");
+  }
   if (!user) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[calc(100vh-16rem)] bg-gradient-to-b from-blue-50 to-white text-center ">
